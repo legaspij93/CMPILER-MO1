@@ -389,6 +389,7 @@ statement
     | FOR typeType? expression (UPTO|DOWNTO) expression statement
     | WHILE expression (UPTO|DOWNTO) expression statement
     | DO statement WHILE parExpression ';'
+    | PRINT (expression) ';'
     | TRY block (catchClause+ finallyBlock? | finallyBlock)
     | TRY resourceSpecification block catchClause* finallyBlock?
     | SWITCH parExpression '{' switchBlockStatementGroup* switchLabel* '}'
