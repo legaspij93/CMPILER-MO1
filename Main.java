@@ -24,7 +24,7 @@ import static org.antlr.v4.runtime.CharStreams.fromString;
 
 /**
  *
- * @author JUSTIN CHUA
+ * @author JUSTIN CHUA, JOHN GABRIEL LEGASPI and JUDE KANG
  */
 public class Main {
 
