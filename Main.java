@@ -32,9 +32,9 @@ public class Main {
 
         String s = "testinput.txt";
         CharStream stream = fromFileName(s);
-        JavaLexer lexer  = new JavaLexer(stream);
+        CLexer lexer  = new CLexer(stream);
         TokenStream tokenStream = new CommonTokenStream(lexer);
-        JavaParser parser = new JavaParser(tokenStream);
+        CParser parser = new CParser(tokenStream);
 
         SyntaxErrorListener SEListener = new SyntaxErrorListener();
 
@@ -42,9 +42,9 @@ public class Main {
 
         parser.addErrorListener(SEListener);
 
-        ParseTree tree = parser.compilationUnit();
+        ParseTree tree = parser.program();
 
-        JavaParserBaseListener listener = new JavaParserBaseListener();
+        CBaseListener listener = new CBaseListener();
 
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(listener,tree);
@@ -138,13 +138,13 @@ public class Main {
 
     static public void process(String input, JTextArea errors, TreeViewer viewr){
         CharStream stream = fromString(input);
-        JavaLexer lexer  = new JavaLexer(stream);
+        CLexer lexer  = new CLexer(stream);
         TokenStream tokenStream = new CommonTokenStream(lexer);
-        JavaParser parser = new JavaParser(tokenStream);
+        CParser parser = new CParser(tokenStream);
 
         SyntaxErrorListener listener = new SyntaxErrorListener();
         parser.addErrorListener(listener);
-        ParseTree tree = parser.compilationUnit();
+        ParseTree tree = parser.program();
 
         errors.setText("");
         for(int i=0;i<listener.getSyntaxErrors().size();i++){

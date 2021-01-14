@@ -21,29 +21,29 @@ public class SyntaxError {
         newMessage ="ERROR: ("+ line + charPosition + ")";
     }
 
-public Recognizer<?, ?> getRecognizer(){
-    return recognizer;
-}
+    public Recognizer<?, ?> getRecognizer(){
+        return recognizer;
+    }
 
-public Object getOffendingSymbol(){
-    return offendingSymbol;
-}
+    public Object getOffendingSymbol(){
+        return offendingSymbol;
+    }
 
-public int getLine(){
-    return line;
-}
+    public int getLine(){
+        return line;
+    }
 
-public int getCharPosition() {
-    return charPosition;
-}
+    public int getCharPosition() {
+        return charPosition;
+    }
 
-public String getMessage(){
-    return message;
-}
+    public String getMessage(){
+        return message;
+    }
 
-public RecognitionException getException()
-{
-    return e;
-}
+    public RecognitionException getException()
+    {
+        return e;
+    }
 }
 
