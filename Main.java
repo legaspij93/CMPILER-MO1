@@ -92,7 +92,6 @@ public class Main {
             else if(msg.contains("no viable alternative at input")){
                 String test = SEListener.getSyntaxErrors().get(i).getOffendingSymbol().toString();
                 test = test.split("'")[1];
-//                System.out.println(test);
                 textarea.append("(Syntax error at line:" + SEListener.getSyntaxErrors().get(i).getLine() + ") " + "consider changing symbol in expression -> " + test + "\n");
             }
             else if(msg.contains("cannot find symbol")){
@@ -114,8 +113,8 @@ public class Main {
         JPanel panel3 = new JPanel();
         JButton fontCompileButton = new JButton("Compile");
         JTextArea textarea2 = new JTextArea("Place Input here");
-        textarea2.setLineWrap(true);
-        textarea2.setWrapStyleWord(true);
+        textarea2.setLineWrap(false);
+        textarea2.setWrapStyleWord(false);
         textarea2.setFont(new Font("Arial",Font.PLAIN,12));
         textEditor. setLocationByPlatform(true);
 
@@ -132,7 +131,7 @@ public class Main {
         panel3.add(textarea2);
         textEditor.add(panel3);
         textEditor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        textEditor.setSize(400, 400);
+        textEditor.setSize(1000, 400);
         textEditor.setVisible(true);
 
     }
@@ -152,9 +151,23 @@ public class Main {
             String msg = listener.getSyntaxErrors().get(i).getMessage();
             String error = msg.split("'")[1];
             System.out.println(error);
-            if (error.contains("missing")) {
-                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "missing " + error + "\n");
-            } else {
+            if (msg.contains("missing")) {
+                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "missing -> " + error + "\n");
+            } else if (msg.contains("extraneous input")){
+                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "extra character/s -> " + error + "\n");
+            }
+            else if(msg.contains("mismatched input")){
+                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "unexpected -> " + error + "\n");
+            }
+            else if(msg.contains("no viable alternative at input")){
+                String test = listener.getSyntaxErrors().get(i).getOffendingSymbol().toString();
+                test = test.split("'")[1];
+                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "consider changing symbol in expression -> " + test + "\n");
+            }
+            else if(msg.contains("cannot find symbol")){
+                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "missing symbol -> " + error + "\n");
+            }
+            else {
                 errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + listener.getSyntaxErrors().get(i).getMessage() + "\n");
             }
         }
@@ -162,6 +175,5 @@ public class Main {
         viewr.setScale(1);//scale a little
         viewr.setRuleNames(Arrays.asList(parser.getRuleNames()));
         viewr.setTree(tree);
-
     }
 }
