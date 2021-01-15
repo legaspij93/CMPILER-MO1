@@ -390,7 +390,7 @@ statement
     | WHILE expression (UPTO|DOWNTO) expression statement
     | DO statement WHILE parExpression ';'
     | PRINT (expression) ';'
-    | SCAN ()';'
+    | SCAN (expression)';'
     | TRY block (catchClause+ finallyBlock? | finallyBlock)
     | TRY resourceSpecification block catchClause* finallyBlock?
     | SWITCH parExpression '{' switchBlockStatementGroup* switchLabel* '}'
@@ -500,7 +500,7 @@ expression
     | expression bop='||' expression
     | <assoc=right> expression bop='?' expression ':' expression
     | <assoc=right> expression
-      bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
+      bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=' | ',') //added comma
       expression
     | lambdaExpression // Java8
 
