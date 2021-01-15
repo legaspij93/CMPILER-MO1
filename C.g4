@@ -4,18 +4,26 @@ grammar C;
 program: function* main function* EOF;
 
 block_content: (( declaration | constantdeclaration | assignment | loopdowhile | operation | function | print | scan | call) SEMICOLON) | (loop | condition);
-//block_content2: ( declaration | constantdeclaration | assignment | condition | operation | function | print | scan) SEMICOLON;
-
 
 //function declaration
 main: MAIN LEFT_PAREN RIGHT_PAREN LEFT_BRACE block_content* RIGHT_BRACE;
-function: FUNCTION (INT_TYPE | FLOAT_TYPE | CHAR_TYPE | STRING_TYPE | VOID_TYPE) (LEFT_BRACKET RIGHT_BRACKET)? ID LEFT_PAREN (parameter (COMMA parameter)*)? RIGHT_PAREN LEFT_BRACE block_content* (returnstatement)? RIGHT_BRACE;
-//function: FUNCTION (INT_TYPE | FLOAT_TYPE | CHAR_TYPE | STRING_TYPE | VOID_TYPE) (LEFT_BRACKET RIGHT_BRACKET)? ID LEFT_PAREN (parameter (COMMA parameter)*)? RIGHT_PAREN LEFT_BRACE block_content* (returnstatement)? RIGHT_BRACE;
+function: FUNCTION (INT_TYPE | FLOAT_TYPE | CHAR_TYPE | STRING_TYPE | VOID_TYPE) ID LEFT_PAREN parameter? RIGHT_PAREN LEFT_BRACE block_content* (returnstatement)? RIGHT_BRACE;
 call: ID LEFT_PAREN (INT_VALUE| FLOAT_VALUE | STRING_VALUE | CHAR_VALUE | booleanexp | opr | ID)* RIGHT_PAREN;
 returnstatement: RETURN (booleanexp|opr|ID)*;
 
 //parameter
-parameter: intparameter | booleanparameter | stringparameter | charparameter| arrayparameter| floatparameter;
+parameter: parameterList;
+
+parameterList: parameterList COMMA paramType
+         | paramType;
+
+paramType: intparameter
+         | booleanparameter
+         | stringparameter
+         | charparameter
+         | arrayparameter
+         | floatparameter;
+
 intparameter: INT_TYPE ID;
 booleanparameter: BOOLEAN_TYPE ID;
 floatparameter: FLOAT_TYPE ID;
@@ -25,10 +33,18 @@ arrayparameter: (INT_TYPE|FLOAT_TYPE|CHAR_TYPE|BOOLEAN_TYPE) LEFT_BRACKET RIGHT_
 
 
 //declaration
-declaration: singledeclaration | arraydeclaration;
+declaration: singledeclaration
+           | arraydeclaration;
 constantdeclaration: CONSTANT declaration;
-singledeclaration: intdeclaration | floatdeclaration | chardeclaration | booleandeclaration | stringdeclaration;
-arraydeclaration: intarrdeclaration | floatarrdeclaration | chararrdeclaration | booleanarrdeclaration;
+singledeclaration: intdeclaration
+           | floatdeclaration
+           | chardeclaration
+           | booleandeclaration
+           | stringdeclaration;
+arraydeclaration: intarrdeclaration
+           | floatarrdeclaration
+           | chararrdeclaration
+           | booleanarrdeclaration;
 booleandeclaration: BOOLEAN_TYPE ID ( EQUALS booleanexp (logic booleanexp)*);
 booleanarrdeclaration: BOOLEAN_TYPE LEFT_BRACKET RIGHT_BRACKET ID (EQUALS 'create' BOOLEAN_TYPE booleanexp (logic booleanexp)*)?;
 intdeclaration: INT_TYPE ID (EQUALS (INT_VALUE|opr))?;
@@ -46,10 +62,9 @@ assignment: ID EQUALS ( opr | CHAR_VALUE | STRING_VALUE);
 condition: IF LEFT_PAREN booleanexp (logic booleanexp)* RIGHT_PAREN LEFT_BRACE block_content* RIGHT_BRACE (ELSEIF LEFT_PAREN booleanexp (logic booleanexp)* RIGHT_PAREN LEFT_BRACE block_content* RIGHT_BRACE)* (ELSE LEFT_BRACE block_content* RIGHT_BRACE)?;
 
 //looping blocks
-//loopwhiledowhile : loopwhile | loopdowhile;
 loop: loopfor | loopwhile;
-loopfor: FOR (ID | intdeclaration | assignment)  (UP_TO | DOWN_TO) (ID | INT_VALUE)LEFT_BRACE block_content* RIGHT_BRACE;
-loopwhile: WHILE LEFT_PAREN booleanexp RIGHT_PAREN LEFT_BRACE block_content* RIGHT_BRACE;
+loopfor: FOR (ID | intdeclaration | assignment)  (UP_TO | DOWN_TO) (ID | INT_VALUE)LEFT_BRACE block_content+ RIGHT_BRACE;
+loopwhile: WHILE (ID | intdeclaration | assignment)  (UP_TO | DOWN_TO) (ID | INT_VALUE) LEFT_BRACE block_content* RIGHT_BRACE;
 loopdowhile: DO LEFT_BRACE block_content* RIGHT_BRACE WHILE LEFT_PAREN booleanexp RIGHT_PAREN;
 
 //operations
@@ -62,12 +77,16 @@ multopr: multopr mult_div_mod | terminalopr;
 mult_div_mod:  MUL terminalopr | DIV terminalopr | MOD terminalopr;
 terminalopr: ID | INT_VALUE | FLOAT_VALUE | LEFT_PAREN opr RIGHT_PAREN;
 
-
-shortopr: PLUS_PLUS | MINUS_MINUS | (PLUS_EQUALS | MIN_EQUALS | MUL_EQUALS | DIV_EQUALS) INT_VALUE;
+shortopr: PLUS_PLUS
+        | MINUS_MINUS
+        | (PLUS_EQUALS | MIN_EQUALS | MUL_EQUALS | DIV_EQUALS) INT_VALUE;
 
 //printing and scanning
 
-print: PRINT LEFT_PAREN(STRING_VALUE | ID)? (PLUS (STRING_VALUE | ID))* RIGHT_PAREN;
+print: PRINT LEFT_PAREN printParams RIGHT_PAREN;
+printParams: printParams PLUS (STRING_VALUE|ID)
+        | PLUS (STRING_VALUE|ID)
+        | (STRING_VALUE|ID);
 scan: SCAN LEFT_PAREN STRING_VALUE COMMA ID RIGHT_PAREN;
 
 //boolean parsing
