@@ -9,7 +9,6 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ConsoleErrorListener;
 import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import javax.swing.*;
@@ -32,9 +31,9 @@ public class Main {
 
         String s = "testinput.txt";
         CharStream stream = fromFileName(s);
-        CLexer lexer  = new CLexer(stream);
+        TripleJLexer lexer  = new TripleJLexer(stream);
         TokenStream tokenStream = new CommonTokenStream(lexer);
-        CParser parser = new CParser(tokenStream);
+        TripleJParser parser = new TripleJParser(tokenStream);
 
         SyntaxErrorListener SEListener = new SyntaxErrorListener();
 
@@ -42,9 +41,9 @@ public class Main {
 
         parser.addErrorListener(SEListener);
 
-        ParseTree tree = parser.program();
+        TripleJParser.CompilationUnitContext tree = parser.compilationUnit();
 
-        CBaseListener listener = new CBaseListener();
+        TripleJBaseListener listener = new TripleJBaseListener();
 
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(listener,tree);
@@ -72,33 +71,33 @@ public class Main {
         panel2.add(textarea);
         textarea.setEditable(false);
         frame2. setLocationByPlatform(true);
-        for(int i=0;i<SEListener.getSyntaxErrors().size();i++) {
-            System.out.println("Line " + SEListener.getSyntaxErrors().get(i).getLine());
-            System.out.println("Message: "+SEListener.getSyntaxErrors().get(i).getOffendingSymbol());
-            String msg = SEListener.getSyntaxErrors().get(i).getMessage();
+        for(int i=0;i<SEListener.errorsArray.size();i++) {
+            System.out.println("Line " + SEListener.errorsArray.get(i).getLine());
+            System.out.println("Message: "+SEListener.errorsArray.get(i).getOffendingSymbol());
+            String msg = SEListener.errorsArray.get(i).getMessage();
             String error = msg.split("'")[1];
             System.out.println(msg.split("'")[0]);
             System.out.println("Error symbols found: " + error);
             System.out.println("_____________________________________________________________");
             if (msg.contains("missing")) {
-                textarea.append("(Syntax error at line:" + SEListener.getSyntaxErrors().get(i).getLine() + ") " + "missing -> " + error + "\n");
+                textarea.append("(Syntax Error at Line " + SEListener.errorsArray.get(i).getLine() + ") " + "Missing -> " + error + "\n");
             }
             else if (msg.contains("extraneous input")){
-                textarea.append("(Syntax error at line:" + SEListener.getSyntaxErrors().get(i).getLine() + ") " + "extra character/s -> " + error + "\n");
+                textarea.append("(Syntax Error at Line " + SEListener.errorsArray.get(i).getLine() + ") "+ "Extra character/s -> " + error + "\n");
             }
             else if(msg.contains("mismatched input")){
-                textarea.append("(Syntax error at line:" + SEListener.getSyntaxErrors().get(i).getLine() + ") " + "unexpected -> " + error + "\n");
+                textarea.append("(Syntax Error at Line " + SEListener.errorsArray.get(i).getLine() + ") "+ "Unexpected -> " + error + "\n");
             }
             else if(msg.contains("no viable alternative at input")){
-                String test = SEListener.getSyntaxErrors().get(i).getOffendingSymbol().toString();
+                String test = SEListener.errorsArray.get(i).getOffendingSymbol().toString();
                 test = test.split("'")[1];
-                textarea.append("(Syntax error at line:" + SEListener.getSyntaxErrors().get(i).getLine() + ") " + "consider changing symbol in expression -> " + test + "\n");
+                textarea.append("(Syntax Error at Line " + SEListener.errorsArray.get(i).getLine() + ") "+ "Consider changing symbol in expression -> " + test + "\n");
             }
             else if(msg.contains("cannot find symbol")){
-                textarea.append("(Syntax error at line:" + SEListener.getSyntaxErrors().get(i).getLine() + ") " + "missing symbol -> " + error + "\n");
+                textarea.append("(Syntax Error at Line " + SEListener.errorsArray.get(i).getLine() + ") "+ "Missing symbol -> " + error + "\n");
             }
             else {
-                textarea.append("(Syntax error at line:" + SEListener.getSyntaxErrors().get(i).getLine() + ") " + SEListener.getSyntaxErrors().get(i).getMessage() + "\n");
+                textarea.append("(Syntax Error at Line " + SEListener.errorsArray.get(i).getLine() + ") " + SEListener.errorsArray.get(i).getMessage() + "\n");
             }
         }
 
@@ -138,37 +137,37 @@ public class Main {
 
     static public void process(String input, JTextArea errors, TreeViewer viewr){
         CharStream stream = fromString(input);
-        CLexer lexer  = new CLexer(stream);
+        TripleJLexer lexer  = new TripleJLexer(stream);
         TokenStream tokenStream = new CommonTokenStream(lexer);
-        CParser parser = new CParser(tokenStream);
+        TripleJParser parser = new TripleJParser(tokenStream);
 
         SyntaxErrorListener listener = new SyntaxErrorListener();
         parser.addErrorListener(listener);
-        ParseTree tree = parser.program();
+        TripleJParser.CompilationUnitContext tree = parser.compilationUnit();
 
         errors.setText("");
-        for(int i=0;i<listener.getSyntaxErrors().size();i++){
-            String msg = listener.getSyntaxErrors().get(i).getMessage();
-            String error = msg.split("'")[1];
+        for(int i=0;i<listener.errorsArray.size();i++){
+            String msg = listener.errorsArray.get(i).getMessage();
+            String error = msg;//.split("'")[1];
             System.out.println(error);
             if (msg.contains("missing")) {
-                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "missing -> " + error + "\n");
+                errors.append("(Syntax Error at Line " + listener.errorsArray.get(i).getLine() + ") "+ "Missing -> " + error + "\n");
             } else if (msg.contains("extraneous input")){
-                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "extra character/s -> " + error + "\n");
+                errors.append("(Syntax Error at Line " + listener.errorsArray.get(i).getLine() + ") "+ "Extra character/s -> " + error + "\n");
             }
             else if(msg.contains("mismatched input")){
-                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "unexpected -> " + error + "\n");
+                errors.append("(Syntax Error at Line " + listener.errorsArray.get(i).getLine() + ") "+ "Unexpected -> " + error + "\n");
             }
             else if(msg.contains("no viable alternative at input")){
-                String test = listener.getSyntaxErrors().get(i).getOffendingSymbol().toString();
+                String test = listener.errorsArray.get(i).getOffendingSymbol().toString();
                 test = test.split("'")[1];
-                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "consider changing symbol in expression -> " + test + "\n");
+                errors.append("(Syntax Error at Line " + listener.errorsArray.get(i).getLine() + ") "+ "Consider changing symbol in expression -> " + test + "\n");
             }
             else if(msg.contains("cannot find symbol")){
-                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + "missing symbol -> " + error + "\n");
+                errors.append("(Syntax Error at Line " + listener.errorsArray.get(i).getLine() + ") "+ "Missing symbol -> " + error + "\n");
             }
             else {
-                errors.append("(Syntax error at line:" + listener.getSyntaxErrors().get(i).getLine() + ") " + listener.getSyntaxErrors().get(i).getMessage() + "\n");
+                errors.append("(Syntax Error at Line " + listener.errorsArray.get(i).getLine() + ") "+ listener.errorsArray.get(i).getMessage() + "\n");
             }
         }
 
